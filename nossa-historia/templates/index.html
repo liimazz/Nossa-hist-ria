@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block bodyclass %}home{% endblock %}
+{% block body %}
+
+<header class="topbar" id="topbar">
+  <a class="brand" href="#inicio"><span class="heart-ico">♥</span> Nossa História</a>
+  <nav>
+    <a href="#inicio">Início</a>
+    <a href="#momentos">Momentos</a>
+    {% if user %}
+      <a class="pill" href="{{ url_for('novo') }}">＋ Postar</a>
+      <form method="post" action="{{ url_for('sair') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="linkbtn">Sair ({{ user['display_name'] }})</button></form>
+    {% else %}
+      <a class="pill ghost" href="{{ url_for('entrar') }}">Área do casal</a>
+    {% endif %}
+  </nav>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="hearts" id="hearts" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <p class="eyebrow">um cantinho só nosso</p>
+    <h1><span>{{ NOME_1 }}</span><i class="amp">&amp;</i><span>{{ NOME_2 }}</span></h1>
+    <p class="lead">{{ FRASE_INICIAL }}</p>
+
+    <div class="counter" id="counter" data-start="{{ INICIO_NAMORO }}" aria-live="off">
+      <span class="c-label">juntos há</span>
+      <div class="c-days"><b id="cDays">0</b><span>dias</span></div>
+      <div class="c-time">
+        <span><b id="cH">00</b>h</span><span class="sep">:</span>
+        <span><b id="cM">00</b>min</span><span class="sep">:</span>
+        <span><b id="cS">00</b>s</span>
+      </div>
+      <small>desde {{ INICIO_TEXTO }}</small>
+    </div>
+
+    <a class="scroll" href="#momentos" aria-label="Ver nossos momentos"><span>nossos momentos</span><i>↓</i></a>
+  </div>
+</section>
+
+<main>
+  <section class="feed" id="momentos">
+    <div class="sec-head">
+      <p class="eyebrow dark">nosso baú de lembranças</p>
+      <h2>Momentos <em>especiais</em></h2>
+    </div>
+
+    <div class="filters" role="tablist">
+      <button class="chip active" data-filter="all">Tudo</button>
+      <button class="chip" data-filter="photo">📷 Fotos</button>
+      <button class="chip" data-filter="video">🎬 Vídeos</button>
+      <button class="chip" data-filter="letter">💌 Cartinhas</button>
+    </div>
+
+    {% if posts %}
+    <div class="grid" id="grid">
+      {% for p in posts %}
+      <article class="card {{ p['kind'] }} reveal" data-kind="{{ p['kind'] }}" data-id="{{ p['id'] }}" tabindex="0">
+        {% if p['kind'] == 'photo' %}
+          <div class="thumb"><img src="{{ url_for('midia', nome=p['filename']) }}" alt="{{ p['title'] or 'Foto' }}" loading="lazy"></div>
+        {% elif p['kind'] == 'video' %}
+          <div class="thumb"><video src="{{ url_for('midia', nome=p['filename']) }}#t=0.1" preload="metadata" muted playsinline></video><span class="play">▶</span></div>
+        {% else %}
+          <div class="paper">
+            <span class="stamp">♥</span>
+            <h3>{{ p['title'] or 'Para você' }}</h3>
+            <p>{{ p['body'] }}</p>
+            <span class="sign">— {{ p['author'] }}</span>
+          </div>
+        {% endif %}
+        <div class="meta">
+          {% if p['kind'] != 'letter' and (p['title'] or p['body']) %}
+            <div class="cap"><strong>{{ p['title'] }}</strong>{% if p['title'] and p['body'] %} {% endif %}<span>{{ p['body'] }}</span></div>
+          {% endif %}
+          <div class="row">
+            <button class="act like {{ 'on' if p['liked'] }}" data-like="{{ p['id'] }}" aria-label="Curtir"><svg viewBox="0 0 24 24" class="hrt"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><b class="n">{{ p['likes'] }}</b></button>
+            <button class="act cmt" data-open="{{ p['id'] }}" aria-label="Comentários"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.800 7L3 21l2-5.500A8 8 0 1 1 21 12z"/></svg><b class="nc" data-cc="{{ p['id'] }}">{{ p['ncomments'] }}</b></button>
+            <span class="date">{{ p['event_date']|datebr }}</span>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    <p class="empty hidden" id="emptyFilter">Nada por aqui ainda… 💭</p>
+    {% else %}
+    <div class="empty-state">
+      <div class="big">💞</div>
+      <p>Nossas lembranças vão aparecer aqui.</p>
+      {% if user %}<a class="btn" href="{{ url_for('novo') }}">＋ Adicionar a primeira</a>{% endif %}
+    </div>
+    {% endif %}
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="script">{{ NOME_1 }} &amp; {{ NOME_2 }}</div>
+  <p>Feito com carinho para guardar a nossa história.</p>
+</footer>
+
+<!-- barra inferior (celular) -->
+<nav class="tabbar" aria-label="Navegação">
+  <a href="#inicio" data-nav="inicio"><span>🏠</span><small>Início</small></a>
+  <a href="#momentos" data-nav="momentos"><span>📸</span><small>Momentos</small></a>
+  {% if user %}
+    <a href="{{ url_for('novo') }}" class="plus"><span>＋</span></a>
+    <form method="post" action="{{ url_for('sair') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button><span>👋</span><small>Sair</small></button></form>
+  {% else %}
+    <a href="{{ url_for('entrar') }}"><span>🔑</span><small>Casal</small></a>
+  {% endif %}
+</nav>
+
+<!-- visualizador -->
+<div class="modal hidden" id="modal" role="dialog" aria-modal="true">
+  <div class="backdrop" data-close></div>
+  <div class="sheet" id="sheet"></div>
+</div>
+{% endblock %}

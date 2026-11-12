@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Área do casal{% endblock %}
+{% block bodyclass %}auth{% endblock %}
+{% block body %}
+<main class="auth-wrap">
+  <div class="hearts" id="hearts" aria-hidden="true"></div>
+  <form class="auth-card" method="post" autocomplete="on">
+    <div class="auth-ico">♥</div>
+    <p class="eyebrow dark">espaço reservado</p>
+    <h1>Área do casal</h1>
+    <p class="sub">Só {{ NOME_1 }} e {{ NOME_2 }} entram aqui para postar.</p>
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>Usuário
+      <input name="usuario" autocomplete="username" autocapitalize="none" placeholder="guilherme ou julia" required>
+    </label>
+    <label>Senha
+      <input name="senha" type="password" autocomplete="current-password" required>
+    </label>
+    {% if erro %}<p class="erro">{{ erro }}</p>{% endif %}
+    <button class="btn full">Entrar</button>
+    <a class="back" href="{{ url_for('index') }}">← voltar ao site</a>
+  </form>
+</main>
+{% endblock %}

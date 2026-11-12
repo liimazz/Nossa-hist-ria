@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Novo momento{% endblock %}
+{% block bodyclass %}auth novo{% endblock %}
+{% block body %}
+<main class="auth-wrap">
+  <form class="auth-card wide" id="novoForm" method="post" enctype="multipart/form-data">
+    <p class="eyebrow dark">olá, {{ user['display_name'] }} 💕</p>
+    <h1>Novo momento</h1>
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+
+    <div class="seg" role="tablist">
+      <label><input type="radio" name="modo" value="midia" checked><span>📷 Foto / Vídeo</span></label>
+      <label><input type="radio" name="modo" value="cartinha"><span>💌 Cartinha</span></label>
+    </div>
+
+    <div id="boxMidia">
+      <label class="drop" id="drop">
+        <input type="file" name="arquivo" id="arquivo" accept="image/*,video/mp4,video/webm,video/quicktime">
+        <span class="drop-txt" id="dropTxt">Toque para escolher uma foto ou vídeo<br><small>até 80 MB</small></span>
+        <img id="prev" class="hidden" alt="">
+        <video id="prevV" class="hidden" muted playsinline controls></video>
+      </label>
+    </div>
+
+    <label>Título <small>(opcional)</small>
+      <input name="titulo" maxlength="120" placeholder="Ex.: Nosso primeiro passeio">
+    </label>
+    <label><span id="lblTexto">Legenda <small>(opcional)</small></span>
+      <textarea name="texto" id="texto" rows="4" maxlength="8000" placeholder="Escreva algo sobre esse momento..."></textarea>
+    </label>
+    <label>Data do momento
+      <input type="date" name="data" value="{{ hoje }}">
+    </label>
+
+    {% with msgs = get_flashed_messages() %}{% for m in msgs %}<p class="erro">{{ m }}</p>{% endfor %}{% endwith %}
+    <p class="erro hidden" id="erro"></p>
+    <div class="progress hidden" id="prog"><i id="progBar"></i></div>
+
+    <button class="btn full" id="enviar">Publicar ♥</button>
+    <a class="back" href="{{ url_for('index') }}">← voltar ao site</a>
+  </form>
+</main>
+{% endblock %}
